@@ -1228,7 +1228,7 @@ func (cmd *benchCommand) runWritesWithSource(db *bolt.DB, options *BenchOptions,
 				binary.BigEndian.PutUint32(key, keySource())
 
 				// Insert key/value.
-				if err := b.Put(key, value); err != nil {
+				if err, _ := b.Put(key, value); err != nil {
 					return err
 				}
 			}
@@ -1271,7 +1271,7 @@ func (cmd *benchCommand) runWritesNestedWithSource(db *bolt.DB, options *BenchOp
 				binary.BigEndian.PutUint32(key, keySource())
 
 				// Insert value into subbucket.
-				if err := b.Put(key, value); err != nil {
+				if err, _ := b.Put(key, value); err != nil {
 					return err
 				}
 			}

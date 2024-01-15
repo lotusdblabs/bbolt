@@ -158,7 +158,7 @@ func (db *DB) Fill(bucket []byte, numTx int, numKeysPerTx int,
 		err := db.Update(func(tx *bolt.Tx) error {
 			b, _ := tx.CreateBucketIfNotExists(bucket)
 			for i := 0; i < numKeysPerTx; i++ {
-				if err := b.Put(keyGen(tr, i), valueGen(tr, i)); err != nil {
+				if err, _ := b.Put(keyGen(tr, i), valueGen(tr, i)); err != nil {
 					return err
 				}
 			}

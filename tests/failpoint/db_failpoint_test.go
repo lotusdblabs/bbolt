@@ -130,7 +130,7 @@ func TestIssue72(t *testing.T) {
 		bk := tx.Bucket(bucketName)
 
 		for _, id := range []int{1, 2, 3, 4, 10, 11, 12} {
-			if txerr := bk.Put(idToBytes(id), make([]byte, 1000)); txerr != nil {
+			if txerr, _ := bk.Put(idToBytes(id), make([]byte, 1000)); txerr != nil {
 				return txerr
 			}
 		}
@@ -158,7 +158,8 @@ func TestIssue72(t *testing.T) {
 			time.Sleep(3 * time.Second)
 			copy(key, updatedKey)
 		}()
-		return bk.Put(key, make([]byte, 100))
+		err, _ := bk.Put(key, make([]byte, 100))
+		return err
 	})
 	require.NoError(t, err)
 
@@ -182,7 +183,8 @@ func TestIssue72(t *testing.T) {
 	// |1 |10|11|12|100|
 	// +--+--+--+--+---+
 	err = db.Update(func(tx *bolt.Tx) error {
-		return tx.Bucket(bucketName).Put(idToBytes(100), make([]byte, 100))
+		err, _ := tx.Bucket(bucketName).Put(idToBytes(100), make([]byte, 100))
+		return err
 	})
 	require.NoError(t, err)
 
@@ -197,7 +199,7 @@ func TestIssue72(t *testing.T) {
 		bk := tx.Bucket(bucketName)
 
 		for _, id := range []int{101, 102, 103, 104, 105} {
-			if txerr := bk.Put(idToBytes(id), make([]byte, 1000)); txerr != nil {
+			if txerr, _ := bk.Put(idToBytes(id), make([]byte, 1000)); txerr != nil {
 				return txerr
 			}
 		}

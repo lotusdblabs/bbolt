@@ -471,7 +471,7 @@ func executeWrite(db *bolt.DB, bucket []byte, key []byte, writeBytes bytesRange,
 			return cErr
 		}
 
-		putErr := b.Put(key, v)
+		putErr, _ := b.Put(key, v)
 		if putErr == nil {
 			rec = historyRecord{
 				OperationType: Write,
@@ -494,7 +494,7 @@ func executeDelete(db *bolt.DB, bucket []byte, key []byte) (historyRecord, error
 	err := db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucket)
 
-		deleteErr := b.Delete(key)
+		deleteErr, _ := b.Delete(key)
 		if deleteErr == nil {
 			rec = historyRecord{
 				OperationType: Delete,
@@ -830,7 +830,7 @@ func TestConcurrentRepeatableRead(t *testing.T) {
 				}
 				for i := 0; i < 1000; i++ {
 					k := fmt.Sprintf("key_%d", i)
-					if err := b.Put([]byte(k), make([]byte, 1024)); err != nil {
+					if err, _ := b.Put([]byte(k), make([]byte, 1024)); err != nil {
 						return err
 					}
 				}
@@ -843,11 +843,12 @@ func TestConcurrentRepeatableRead(t *testing.T) {
 				b := tx.Bucket(bucket)
 				for i := 0; i < 1000; i++ {
 					k := fmt.Sprintf("key_%d", i)
-					if err := b.Delete([]byte(k)); err != nil {
+					if err, _ := b.Delete([]byte(k)); err != nil {
 						return err
 					}
 				}
-				return b.Put(key, []byte("randomValue"))
+				err, _ = b.Put(key, []byte("randomValue"))
+				return err
 			})
 			require.NoError(t, err)
 

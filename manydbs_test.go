@@ -47,7 +47,7 @@ func createAndPutKeys(t *testing.T) {
 
 			var key [16]byte
 			rand.Read(key[:])
-			if err := nodes.Put(key[:], nil); err != nil {
+			if err, _ := nodes.Put(key[:], nil); err != nil {
 				return err
 			}
 

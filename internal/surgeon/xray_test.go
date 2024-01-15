@@ -47,7 +47,8 @@ func TestFindPathsToKey_Bucket(t *testing.T) {
 	require.NoError(t, db.Update(func(tx *bbolt.Tx) error {
 		sb, err := tx.Bucket(rootBucket).CreateBucket(subBucket)
 		require.NoError(t, err)
-		require.NoError(t, sb.Put([]byte("foo"), []byte("bar")))
+		err, _ = sb.Put([]byte("foo"), []byte("bar"))
+		require.NoError(t, err)
 		return nil
 	}))
 

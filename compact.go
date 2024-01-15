@@ -73,7 +73,8 @@ func Compact(dst, src *DB, txMaxSize int64) error {
 		}
 
 		// Otherwise treat it as a key/value pair.
-		return b.Put(k, v)
+		err, _ = b.Put(k, v)
+		return err
 	}); err != nil {
 		return err
 	}

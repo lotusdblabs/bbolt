@@ -25,7 +25,7 @@ func TestTx_Check_ReadOnly(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("bar")); err != nil {
 			t.Fatal(err)
 		}
 		return nil
@@ -215,7 +215,7 @@ func TestTx_Get_NotFound(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("bar")); err != nil {
 			t.Fatal(err)
 		}
 		if b.Get([]byte("no_such_key")) != nil {
@@ -355,7 +355,7 @@ func TestTx_DeleteBucket(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("bar")); err != nil {
 			t.Fatal(err)
 		}
 		return nil
@@ -441,7 +441,7 @@ func TestTx_ForEach_NoError(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("bar")); err != nil {
 			t.Fatal(err)
 		}
 
@@ -464,7 +464,7 @@ func TestTx_ForEach_WithError(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("bar")); err != nil {
 			t.Fatal(err)
 		}
 
@@ -528,10 +528,10 @@ func TestTx_CopyFile(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("bar")); err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("baz"), []byte("bat")); err != nil {
+		if err, _ := b.Put([]byte("baz"), []byte("bat")); err != nil {
 			t.Fatal(err)
 		}
 		return nil
@@ -596,10 +596,10 @@ func TestTx_CopyFile_Error_Meta(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("bar")); err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("baz"), []byte("bat")); err != nil {
+		if err, _ := b.Put([]byte("baz"), []byte("bat")); err != nil {
 			t.Fatal(err)
 		}
 		return nil
@@ -622,10 +622,10 @@ func TestTx_CopyFile_Error_Normal(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("bar")); err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("baz"), []byte("bat")); err != nil {
+		if err, _ := b.Put([]byte("baz"), []byte("bat")); err != nil {
 			t.Fatal(err)
 		}
 		return nil
@@ -668,7 +668,7 @@ func TestTx_Rollback(t *testing.T) {
 			t.Fatalf("Error starting tx: %v", err)
 		}
 		b := tx.Bucket(bucket)
-		if err := b.Put([]byte("k"), []byte("v")); err != nil {
+		if err, _ := b.Put([]byte("k"), []byte("v")); err != nil {
 			t.Fatalf("Error on put: %v", err)
 		}
 		// Imagine there is an error and tx needs to be rolled-back
@@ -710,7 +710,8 @@ func TestTx_releaseRange(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			return b.Put([]byte(key), []byte(value))
+			err, _ = b.Put([]byte(key), []byte(value))
+			return err
 		}); err != nil {
 			t.Fatal(err)
 		}
@@ -722,7 +723,8 @@ func TestTx_releaseRange(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			return b.Delete([]byte(key))
+			err, _ = b.Delete([]byte(key))
+			return err
 		}); err != nil {
 			t.Fatal(err)
 		}
@@ -813,7 +815,8 @@ func ExampleTx_Rollback() {
 
 	// Set a value for a key.
 	if err := db.Update(func(tx *bolt.Tx) error {
-		return tx.Bucket([]byte("widgets")).Put([]byte("foo"), []byte("bar"))
+		err, _ = tx.Bucket([]byte("widgets")).Put([]byte("foo"), []byte("bar"))
+		return err
 	}); err != nil {
 		log.Fatal(err)
 	}
@@ -824,7 +827,7 @@ func ExampleTx_Rollback() {
 		log.Fatal(err)
 	}
 	b := tx.Bucket([]byte("widgets"))
-	if err := b.Put([]byte("foo"), []byte("baz")); err != nil {
+	if err, _ := b.Put([]byte("foo"), []byte("baz")); err != nil {
 		log.Fatal(err)
 	}
 	if err := tx.Rollback(); err != nil {
@@ -863,7 +866,7 @@ func ExampleTx_CopyFile() {
 		if err != nil {
 			return err
 		}
-		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("bar")); err != nil {
 			return err
 		}
 		return nil
@@ -1032,7 +1035,7 @@ func TestTx_TruncateBeforeWrite(t *testing.T) {
 				require.NoError(t, err)
 				b, err := tx.CreateBucketIfNotExists([]byte("bucket"))
 				require.NoError(t, err)
-				err = b.Put([]byte{byte(count)}, bigvalue)
+				err, _ = b.Put([]byte{byte(count)}, bigvalue)
 				require.NoError(t, err)
 				err = tx.Commit()
 				require.NoError(t, err)

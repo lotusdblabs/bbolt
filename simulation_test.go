@@ -219,7 +219,7 @@ func simulatePutHandler(tx *bolt.Tx, qdb *QuickDB) {
 	}
 
 	// Insert into database.
-	if err := b.Put(keys[len(keys)-1], value); err != nil {
+	if err, _ := b.Put(keys[len(keys)-1], value); err != nil {
 		panic("put: " + err.Error())
 	}
 

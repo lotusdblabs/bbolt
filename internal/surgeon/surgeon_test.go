@@ -22,9 +22,12 @@ func TestRevertMetaPage(t *testing.T) {
 		db.Update(
 			func(tx *bolt.Tx) error {
 				b := tx.Bucket([]byte("data"))
-				assert.NoError(t, b.Put([]byte("0123"), []byte("new Value for 123")))
-				assert.NoError(t, b.Put([]byte("1234b"), []byte("additional object")))
-				assert.NoError(t, b.Delete([]byte("0246")))
+				err, _ := b.Put([]byte("0123"), []byte("new Value for 123"))
+				assert.NoError(t, err)
+				err, _ = b.Put([]byte("1234b"), []byte("additional object"))
+				assert.NoError(t, err)
+				err, _ = b.Delete([]byte("0246"))
+				assert.NoError(t, err)
 				return nil
 			}))
 

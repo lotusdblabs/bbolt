@@ -40,13 +40,13 @@ func TestCursor_Seek(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte("0001")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("0001")); err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("bar"), []byte("0002")); err != nil {
+		if err, _ := b.Put([]byte("bar"), []byte("0002")); err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("baz"), []byte("0003")); err != nil {
+		if err, _ := b.Put([]byte("baz"), []byte("0003")); err != nil {
 			t.Fatal(err)
 		}
 
@@ -116,7 +116,7 @@ func TestCursor_Delete(t *testing.T) {
 		for i := 0; i < count; i += 1 {
 			k := make([]byte, 8)
 			binary.BigEndian.PutUint64(k, uint64(i))
-			if err := b.Put(k, make([]byte, 100)); err != nil {
+			if err, _ := b.Put(k, make([]byte, 100)); err != nil {
 				t.Fatal(err)
 			}
 		}
@@ -180,7 +180,7 @@ func TestCursor_Seek_Large(t *testing.T) {
 			for j := i; j < i+100; j += 2 {
 				k := make([]byte, 8)
 				binary.BigEndian.PutUint64(k, uint64(j))
-				if err := b.Put(k, make([]byte, 100)); err != nil {
+				if err, _ := b.Put(k, make([]byte, 100)); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -283,13 +283,13 @@ func TestCursor_Iterate_Leaf(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("baz"), []byte{}); err != nil {
+		if err, _ := b.Put([]byte("baz"), []byte{}); err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte{0}); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte{0}); err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("bar"), []byte{1}); err != nil {
+		if err, _ := b.Put([]byte("bar"), []byte{1}); err != nil {
 			t.Fatal(err)
 		}
 		return nil
@@ -353,13 +353,13 @@ func TestCursor_LeafRootReverse(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("baz"), []byte{}); err != nil {
+		if err, _ := b.Put([]byte("baz"), []byte{}); err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte{0}); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte{0}); err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("bar"), []byte{1}); err != nil {
+		if err, _ := b.Put([]byte("bar"), []byte{1}); err != nil {
 			t.Fatal(err)
 		}
 		return nil
@@ -416,10 +416,10 @@ func TestCursor_Restart(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("bar"), []byte{}); err != nil {
+		if err, _ := b.Put([]byte("bar"), []byte{}); err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte{}); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte{}); err != nil {
 			t.Fatal(err)
 		}
 		return nil
@@ -464,7 +464,7 @@ func TestCursor_First_EmptyPages(t *testing.T) {
 		}
 
 		for i := 0; i < 1000; i++ {
-			if err := b.Put(u64tob(uint64(i)), []byte{}); err != nil {
+			if err, _ := b.Put(u64tob(uint64(i)), []byte{}); err != nil {
 				t.Fatal(err)
 			}
 		}
@@ -478,7 +478,7 @@ func TestCursor_First_EmptyPages(t *testing.T) {
 	if err := db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("widgets"))
 		for i := 0; i < 600; i++ {
-			if err := b.Delete(u64tob(uint64(i))); err != nil {
+			if err, _ := b.Delete(u64tob(uint64(i))); err != nil {
 				t.Fatal(err)
 			}
 		}
@@ -510,7 +510,7 @@ func TestCursor_Last_EmptyPages(t *testing.T) {
 		}
 
 		for i := 0; i < 1000; i++ {
-			if err := b.Put(u64tob(uint64(i)), []byte{}); err != nil {
+			if err, _ := b.Put(u64tob(uint64(i)), []byte{}); err != nil {
 				t.Fatal(err)
 			}
 		}
@@ -524,7 +524,7 @@ func TestCursor_Last_EmptyPages(t *testing.T) {
 	if err := db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("widgets"))
 		for i := 200; i < 1000; i++ {
-			if err := b.Delete(u64tob(uint64(i))); err != nil {
+			if err, _ := b.Delete(u64tob(uint64(i))); err != nil {
 				t.Fatal(err)
 			}
 		}
@@ -560,7 +560,7 @@ func TestCursor_QuickCheck(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, item := range items {
-			if err := b.Put(item.Key, item.Value); err != nil {
+			if err, _ := b.Put(item.Key, item.Value); err != nil {
 				t.Fatal(err)
 			}
 		}
@@ -618,7 +618,7 @@ func TestCursor_QuickCheck_Reverse(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, item := range items {
-			if err := b.Put(item.Key, item.Value); err != nil {
+			if err, _ := b.Put(item.Key, item.Value); err != nil {
 				t.Fatal(err)
 			}
 		}
@@ -758,13 +758,13 @@ func ExampleCursor() {
 		}
 
 		// Insert data into a bucket.
-		if err := b.Put([]byte("dog"), []byte("fun")); err != nil {
+		if err, _ := b.Put([]byte("dog"), []byte("fun")); err != nil {
 			log.Fatal(err)
 		}
-		if err := b.Put([]byte("cat"), []byte("lame")); err != nil {
+		if err, _ := b.Put([]byte("cat"), []byte("lame")); err != nil {
 			log.Fatal(err)
 		}
-		if err := b.Put([]byte("liger"), []byte("awesome")); err != nil {
+		if err, _ := b.Put([]byte("liger"), []byte("awesome")); err != nil {
 			log.Fatal(err)
 		}
 
@@ -812,13 +812,13 @@ func ExampleCursor_reverse() {
 		}
 
 		// Insert data into a bucket.
-		if err := b.Put([]byte("dog"), []byte("fun")); err != nil {
+		if err, _ := b.Put([]byte("dog"), []byte("fun")); err != nil {
 			log.Fatal(err)
 		}
-		if err := b.Put([]byte("cat"), []byte("lame")); err != nil {
+		if err, _ := b.Put([]byte("cat"), []byte("lame")); err != nil {
 			log.Fatal(err)
 		}
-		if err := b.Put([]byte("liger"), []byte("awesome")); err != nil {
+		if err, _ := b.Put([]byte("liger"), []byte("awesome")); err != nil {
 			log.Fatal(err)
 		}
 

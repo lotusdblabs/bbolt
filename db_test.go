@@ -300,7 +300,7 @@ func TestOpen_Size(t *testing.T) {
 
 	db.MustReopen()
 	if err := db.Update(func(tx *bolt.Tx) error {
-		if err := tx.Bucket([]byte("data")).Put([]byte{0}, []byte{0}); err != nil {
+		if err, _ := tx.Bucket([]byte("data")).Put([]byte{0}, []byte{0}); err != nil {
 			t.Fatal(err)
 		}
 		return nil
@@ -341,7 +341,7 @@ func TestOpen_Size_Large(t *testing.T) {
 		if err := db.Update(func(tx *bolt.Tx) error {
 			b, _ := tx.CreateBucketIfNotExists([]byte("data"))
 			for j := 0; j < 1000; j++ {
-				if err := b.Put(u64tob(index), make([]byte, 50)); err != nil {
+				if err, _ := b.Put(u64tob(index), make([]byte, 50)); err != nil {
 					t.Fatal(err)
 				}
 				index++
@@ -369,7 +369,8 @@ func TestOpen_Size_Large(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := db0.Update(func(tx *bolt.Tx) error {
-		return tx.Bucket([]byte("data")).Put([]byte{0}, []byte{0})
+		err, _ = tx.Bucket([]byte("data")).Put([]byte{0}, []byte{0})
+		return err
 	}); err != nil {
 		t.Fatal(err)
 	}
@@ -482,7 +483,7 @@ func TestDB_Open_InitialMmapSize(t *testing.T) {
 	}
 
 	// and commit a large write
-	err = b.Put([]byte("foo"), make([]byte, testWriteSize))
+	err, _ = b.Put([]byte("foo"), make([]byte, testWriteSize))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -518,7 +519,7 @@ func TestDB_Open_ReadOnly(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("bar")); err != nil {
 			t.Fatal(err)
 		}
 		return nil
@@ -593,7 +594,7 @@ func TestOpen_RecoverFreeList(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err = b.Put([]byte(s), wbuf); err != nil {
+		if err, _ = b.Put([]byte(s), wbuf); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -611,7 +612,7 @@ func TestOpen_RecoverFreeList(t *testing.T) {
 		if b == nil {
 			t.Fatal(err)
 		}
-		if err := b.Delete([]byte(s)); err != nil {
+		if err, _ := b.Delete([]byte(s)); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -707,7 +708,7 @@ func TestDB_Concurrent_WriteTo(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := tx.Bucket([]byte("abc")).Put([]byte{0}, []byte{0}); err != nil {
+		if err, _ := tx.Bucket([]byte("abc")).Put([]byte{0}, []byte{0}); err != nil {
 			t.Fatal(err)
 		}
 		for j := 0; j < rtxs; j++ {
@@ -793,13 +794,13 @@ func TestDB_Update(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("bar")); err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Put([]byte("baz"), []byte("bat")); err != nil {
+		if err, _ := b.Put([]byte("baz"), []byte("bat")); err != nil {
 			t.Fatal(err)
 		}
-		if err := b.Delete([]byte("foo")); err != nil {
+		if err, _ := b.Delete([]byte("foo")); err != nil {
 			t.Fatal(err)
 		}
 		return nil
@@ -1061,7 +1062,7 @@ func TestDB_Consistency(t *testing.T) {
 
 	for i := 0; i < 10; i++ {
 		if err := db.Update(func(tx *bolt.Tx) error {
-			if err := tx.Bucket([]byte("widgets")).Put([]byte("foo"), []byte("bar")); err != nil {
+			if err, _ := tx.Bucket([]byte("widgets")).Put([]byte("foo"), []byte("bar")); err != nil {
 				t.Fatal(err)
 			}
 			return nil
@@ -1153,7 +1154,8 @@ func TestDB_Batch(t *testing.T) {
 	for i := 0; i < n; i++ {
 		go func(i int) {
 			ch <- db.Batch(func(tx *bolt.Tx) error {
-				return tx.Bucket([]byte("widgets")).Put(u64tob(uint64(i)), []byte{})
+				err, _ := tx.Bucket([]byte("widgets")).Put(u64tob(uint64(i)), []byte{})
+				return err
 			})
 		}(i)
 	}
@@ -1223,7 +1225,8 @@ func TestDB_BatchFull(t *testing.T) {
 	ch := make(chan error, size)
 	put := func(i int) {
 		ch <- db.Batch(func(tx *bolt.Tx) error {
-			return tx.Bucket([]byte("widgets")).Put(u64tob(uint64(i)), []byte{})
+			err, _ := tx.Bucket([]byte("widgets")).Put(u64tob(uint64(i)), []byte{})
+			return err
 		})
 	}
 
@@ -1281,7 +1284,8 @@ func TestDB_BatchTime(t *testing.T) {
 	ch := make(chan error, size)
 	put := func(i int) {
 		ch <- db.Batch(func(tx *bolt.Tx) error {
-			return tx.Bucket([]byte("widgets")).Put(u64tob(uint64(i)), []byte{})
+			err, _ := tx.Bucket([]byte("widgets")).Put(u64tob(uint64(i)), []byte{})
+			return err
 		})
 	}
 
@@ -1349,7 +1353,7 @@ func ExampleDB_Update() {
 		if err != nil {
 			return err
 		}
-		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+		if err, _ := b.Put([]byte("foo"), []byte("bar")); err != nil {
 			return err
 		}
 		return nil
@@ -1389,10 +1393,10 @@ func ExampleDB_View() {
 		if err != nil {
 			return err
 		}
-		if err := b.Put([]byte("john"), []byte("doe")); err != nil {
+		if err, _ := b.Put([]byte("john"), []byte("doe")); err != nil {
 			return err
 		}
-		if err := b.Put([]byte("susy"), []byte("que")); err != nil {
+		if err, _ := b.Put([]byte("susy"), []byte("que")); err != nil {
 			return err
 		}
 		return nil
@@ -1440,13 +1444,13 @@ func ExampleDB_Begin() {
 		log.Fatal(err)
 	}
 	b := tx.Bucket([]byte("widgets"))
-	if err = b.Put([]byte("john"), []byte("blue")); err != nil {
+	if err, _ = b.Put([]byte("john"), []byte("blue")); err != nil {
 		log.Fatal(err)
 	}
-	if err = b.Put([]byte("abby"), []byte("red")); err != nil {
+	if err, _ = b.Put([]byte("abby"), []byte("red")); err != nil {
 		log.Fatal(err)
 	}
-	if err = b.Put([]byte("zephyr"), []byte("purple")); err != nil {
+	if err, _ = b.Put([]byte("zephyr"), []byte("purple")); err != nil {
 		log.Fatal(err)
 	}
 	if err = tx.Commit(); err != nil {
@@ -1506,7 +1510,8 @@ func BenchmarkDBBatchAutomatic(b *testing.B) {
 				k := h.Sum(nil)
 				insert := func(tx *bolt.Tx) error {
 					b := tx.Bucket([]byte("bench"))
-					return b.Put(k, []byte("filler"))
+					err, _ := b.Put(k, []byte("filler"))
+					return err
 				}
 				if err := db.Batch(insert); err != nil {
 					b.Error(err)
@@ -1549,7 +1554,8 @@ func BenchmarkDBBatchSingle(b *testing.B) {
 				k := h.Sum(nil)
 				insert := func(tx *bolt.Tx) error {
 					b := tx.Bucket([]byte("bench"))
-					return b.Put(k, []byte("filler"))
+					err, _ := b.Put(k, []byte("filler"))
+					return err
 				}
 				if err := db.Update(insert); err != nil {
 					b.Error(err)
@@ -1595,7 +1601,7 @@ func BenchmarkDBBatchManual10x100(b *testing.B) {
 						_, _ = h.Write(buf[:])
 						k := h.Sum(nil)
 						b := tx.Bucket([]byte("bench"))
-						if err := b.Put(k, []byte("filler")); err != nil {
+						if err, _ := b.Put(k, []byte("filler")); err != nil {
 							return err
 						}
 					}
@@ -1638,7 +1644,7 @@ func validateBatchBench(b *testing.B, db *btesting.DB) {
 			if g, e := v, []byte("filler"); !bytes.Equal(g, e) {
 				b.Errorf("bad value for id=%d key=%x: %s != %q", id, k, g, e)
 			}
-			if err := bucket.Delete(k); err != nil {
+			if err, _ := bucket.Delete(k); err != nil {
 				return err
 			}
 		}

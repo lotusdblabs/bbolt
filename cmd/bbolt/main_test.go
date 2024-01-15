@@ -90,7 +90,7 @@ func TestStatsCommand_Run(t *testing.T) {
 			return err
 		}
 		for i := 0; i < 10; i++ {
-			if err := b.Put([]byte(strconv.Itoa(i)), []byte(strconv.Itoa(i))); err != nil {
+			if err, _ := b.Put([]byte(strconv.Itoa(i)), []byte(strconv.Itoa(i))); err != nil {
 				return err
 			}
 		}
@@ -101,7 +101,7 @@ func TestStatsCommand_Run(t *testing.T) {
 			return err
 		}
 		for i := 0; i < 100; i++ {
-			if err := b.Put([]byte(strconv.Itoa(i)), []byte(strconv.Itoa(i))); err != nil {
+			if err, _ := b.Put([]byte(strconv.Itoa(i)), []byte(strconv.Itoa(i))); err != nil {
 				return err
 			}
 		}
@@ -111,7 +111,7 @@ func TestStatsCommand_Run(t *testing.T) {
 		if err != nil {
 			return err
 		}
-		if err := b.Put([]byte("key"), []byte("value")); err != nil {
+		if err, _ := b.Put([]byte("key"), []byte("value")); err != nil {
 			return err
 		}
 
@@ -194,7 +194,7 @@ func TestKeysCommand_Run(t *testing.T) {
 			}
 			for i := 0; i < 3; i++ {
 				key := fmt.Sprintf("%s-%d", name, i)
-				if err := b.Put([]byte(key), []byte{0}); err != nil {
+				if err, _ := b.Put([]byte(key), []byte{0}); err != nil {
 					return err
 				}
 			}
@@ -231,7 +231,7 @@ func TestGetCommand_Run(t *testing.T) {
 			for i := 0; i < 3; i++ {
 				key := fmt.Sprintf("%s-%d", name, i)
 				val := fmt.Sprintf("val-%s-%d", name, i)
-				if err := b.Put([]byte(key), []byte(val)); err != nil {
+				if err, _ := b.Put([]byte(key), []byte(val)); err != nil {
 					return err
 				}
 			}
@@ -268,7 +268,7 @@ func TestPagesCommand_Run(t *testing.T) {
 			for i := 0; i < 3; i++ {
 				key := fmt.Sprintf("%s-%d", name, i)
 				val := fmt.Sprintf("val-%s-%d", name, i)
-				if err := b.Put([]byte(key), []byte(val)); err != nil {
+				if err, _ := b.Put([]byte(key), []byte(val)); err != nil {
 					return err
 				}
 			}
@@ -348,7 +348,7 @@ func TestCompactCommand_Run(t *testing.T) {
 			if err != nil {
 				return err
 			}
-			if err := b.Put([]byte(fmt.Sprintf("l%d", i)), v); err != nil {
+			if err, _ := b.Put([]byte(fmt.Sprintf("l%d", i)), v); err != nil {
 				return err
 			}
 		}
@@ -406,7 +406,7 @@ func fillBucket(b *bolt.Bucket, prefix []byte) error {
 			return err
 		}
 		k := append(prefix, []byte(fmt.Sprintf("k%d", i))...)
-		if err := b.Put(k, v); err != nil {
+		if err, _ := b.Put(k, v); err != nil {
 			return err
 		}
 	}
