@@ -279,17 +279,17 @@ func (b *Bucket) Get(key []byte) []byte {
 // Supplied value must remain valid for the life of the transaction.
 // Returns an error if the bucket was created from a read-only transaction, if the key is blank, if the key is too large, or if the value is too large.
 // Returns true if the key already exists.
-func (b *Bucket) Put(key []byte, value []byte) (error, bool) {
+func (b *Bucket) Put(key []byte, value []byte) (error, []byte) {
 	if b.tx.db == nil {
-		return ErrTxClosed, false
+		return ErrTxClosed, nil
 	} else if !b.Writable() {
-		return ErrTxNotWritable, false
+		return ErrTxNotWritable, nil
 	} else if len(key) == 0 {
-		return ErrKeyRequired, false
+		return ErrKeyRequired, nil
 	} else if len(key) > MaxKeySize {
-		return ErrKeyTooLarge, false
+		return ErrKeyTooLarge, nil
 	} else if int64(len(value)) > MaxValueSize {
-		return ErrValueTooLarge, false
+		return ErrValueTooLarge, nil
 	}
 
 	// Insert into node.
@@ -303,7 +303,7 @@ func (b *Bucket) Put(key []byte, value []byte) (error, bool) {
 
 	// Return an error if there is an existing key with a bucket value.
 	if bytes.Equal(newKey, k) && (flags&bucketLeafFlag) != 0 {
-		return ErrIncompatibleValue, false
+		return ErrIncompatibleValue, nil
 	}
 
 	// gofail: var beforeBucketPut struct{}
@@ -311,9 +311,9 @@ func (b *Bucket) Put(key []byte, value []byte) (error, bool) {
 	c.node().put(newKey, newKey, value, 0, 0)
 
 	if len(v) != 0 {
-		return nil, true
+		return nil, v
 	}
-	return nil, false
+	return nil, nil
 }
 
 // Delete removes a key from the bucket.
