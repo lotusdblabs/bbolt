@@ -320,11 +320,11 @@ func (b *Bucket) Put(key []byte, value []byte) (error, []byte) {
 // If the key does not exist then nothing is done and a nil error is returned.
 // Returns an error if the bucket was created from a read-only transaction.
 // Returns true if key already exists.
-func (b *Bucket) Delete(key []byte) (error, bool) {
+func (b *Bucket) Delete(key []byte) (error, []byte) {
 	if b.tx.db == nil {
-		return ErrTxClosed, false
+		return ErrTxClosed, nil
 	} else if !b.Writable() {
-		return ErrTxNotWritable, false
+		return ErrTxNotWritable, nil
 	}
 
 	// Move cursor to correct position.
@@ -333,21 +333,21 @@ func (b *Bucket) Delete(key []byte) (error, bool) {
 
 	// Return nil if the key doesn't exist.
 	if !bytes.Equal(key, k) {
-		return nil, false
+		return nil, nil
 	}
 
 	// Return an error if there is already existing bucket value.
 	if (flags & bucketLeafFlag) != 0 {
-		return ErrIncompatibleValue, false
+		return ErrIncompatibleValue, nil
 	}
 
 	// Delete the node if we have a matching key.
 	c.node().del(key)
 
 	if len(v) != 0 {
-		return nil, true
+		return nil, v
 	}
-	return nil, false
+	return nil, nil
 }
 
 // Sequence returns the current integer for the bucket without incrementing it.
